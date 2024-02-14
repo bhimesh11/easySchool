@@ -5,14 +5,19 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.annotation.SessionScope;
 import org.springframework.web.servlet.ModelAndView;
 import com.school.easySchool.service.contactService;
+
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -49,7 +54,7 @@ public class contactController
 //        return new ModelAndView("redirect:/contact");
 //    }
 
-    @RequestMapping(value = {"/saveMsg"})
+    @RequestMapping(value = {"/saveMsg"},method = RequestMethod.POST)
     public String saveMessage(@Valid @ModelAttribute("contact") Contact contact, Errors error)
     {
         if(error.hasErrors())
@@ -59,5 +64,20 @@ public class contactController
         }
        contactService.saveMessageDetails(contact);
         return "redirect:/contact";
+    }
+    @RequestMapping( "/displayMessages")
+    public ModelAndView displayMessage(Model model)
+    {
+        List<Contact> contactMsgs = contactService.findMsgwithOpenStatus();
+        ModelAndView modelAndView = new ModelAndView("messages.html");
+        modelAndView.addObject("contactMsgs",contactMsgs);
+
+        return modelAndView;
+    }
+    @RequestMapping(value = "/closeMsg",method = RequestMethod.GET)
+    public String closeMsg(@RequestParam int id)
+    {
+     contactService.updateMsgStatus(id);
+     return "redirect:/displayMessages";
     }
 }

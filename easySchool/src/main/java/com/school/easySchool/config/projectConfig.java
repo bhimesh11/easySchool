@@ -22,18 +22,24 @@ public class projectConfig {
 //                formLogin(Customizer.withDefaults())
 //                .httpBasic(Customizer.withDefaults());
 
-        security.csrf(csrf -> csrf.ignoringRequestMatchers("/saveMsg"))
-                .authorizeHttpRequests(request -> request.requestMatchers("/dashboard").authenticated()
-                        .requestMatchers("/home").permitAll()
-                        .requestMatchers("/contact").permitAll()
-                        .requestMatchers("/saveMsg").permitAll()
-                        .requestMatchers("/holidays", "/holidays/**").authenticated()
-                        .requestMatchers("/courses").authenticated()
-                        .requestMatchers("/about").permitAll()
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/logout").permitAll()
-                        .requestMatchers("/assets/**").permitAll()
-                        .requestMatchers(PathRequest.toH2Console()).permitAll())
+        security.csrf(csrf -> csrf.ignoringRequestMatchers("/saveMsg","/public/**"))
+                .authorizeHttpRequests(request ->
+                        request.
+                                requestMatchers("/dashboard").authenticated()
+                                .requestMatchers("/home").permitAll()
+                                .requestMatchers("/contact").permitAll()
+                                .requestMatchers("/displayMessages").hasRole("ADMIN")
+                                .requestMatchers("/saveMsg").permitAll()
+                                .requestMatchers("/holidays", "/holidays/**").authenticated()
+                                .requestMatchers("/courses").authenticated()
+                                .requestMatchers("/about").permitAll()
+                                //.requestMatchers("/h2-console/**").permitAll()
+                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/logout").permitAll()
+                                .requestMatchers("/assets/**").permitAll()
+                                .requestMatchers("/closeMsg").permitAll()
+                                .requestMatchers("/public/**").permitAll())
+                             //   .requestMatchers(PathRequest.toH2Console()).permitAll())
                 .formLogin(loginConfig -> loginConfig.loginPage("/login")
                         .defaultSuccessUrl("/dashboard")
                         .failureUrl("/login?error=true").permitAll())
@@ -41,12 +47,10 @@ public class projectConfig {
                         .invalidateHttpSession(true)
                         .permitAll())
                 .httpBasic(Customizer.withDefaults());
-        security.headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
+       // security.headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()));
 
         return security.build();
-
     }
-
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
@@ -61,7 +65,6 @@ public class projectConfig {
                 .roles("ADMIN").build();
         return new InMemoryUserDetailsManager(user, admin);
     }
-
 
 //    @Bean
 //    SecurityFilterChain DefauSecurityFilterChain(HttpSecurity security) throws  Exception

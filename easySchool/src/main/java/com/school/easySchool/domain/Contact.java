@@ -1,14 +1,13 @@
 package com.school.easySchool.domain;
 
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 //@Getter
 //@Setter
@@ -16,10 +15,14 @@ import lombok.*;
 //@NoArgsConstructor
 //@AllArgsConstructor
 @Data
+@Entity
+@Table(name="contact_msg")
 public class Contact extends baseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO,generator = "native")
+    @GenericGenerator(name="native",strategy = "native")
+    @Column(name = "contact_id")
     private int contactId;
 
     @NotBlank(message = "name must not be blank")
